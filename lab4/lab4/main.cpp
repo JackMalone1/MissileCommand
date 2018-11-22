@@ -2,8 +2,8 @@
 /// Empty Project for SFML[2.5.0]
 /// 
 /// 
-/// @author Peter Lowe
-/// @date May 2018
+/// @author Jack Malone
+/// @date November 2018
 /// </summary>
 
 #ifdef _DEBUG 
