@@ -1,5 +1,5 @@
 // author Jack Malone
-
+//got help from Ben Miller on how to do collision between asteroid and the explosoion
 #include "Game.h"
 #include <iostream>
 
@@ -95,8 +95,6 @@ void Game::render()
 	m_window.draw(m_laser);
 	m_window.draw(m_asteroid);
 	m_window.draw(m_altitudeText);
-	//m_window.draw(m_welcomeMessage);
-	//m_window.draw(m_logoSprite);
 	m_window.display();
 }
 

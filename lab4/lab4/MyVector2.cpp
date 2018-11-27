@@ -49,13 +49,16 @@ float vectorDotProduct(sf::Vector2f t_vectorA, sf::Vector2f t_VectorB)
 //takes two vectors as input and returns an angle in radians
 float vectorAngleBetween(sf::Vector2f t_vectorA, sf::Vector2f t_VectorB)
 {
-	float dotProduct = vectorDotProduct(t_vectorA, t_VectorB);
-	float lengthVectorA = vectorLength(t_vectorA);
-	float lengthVectorB = vectorLength(t_VectorB);
-	float lengthsMultiplied = lengthVectorA * lengthVectorB;
-	float dotProductDividedByMagnitude = dotProduct / lengthsMultiplied;
-	float angleBetween = acos(dotProductDividedByMagnitude);
-	return angleBetween;
+	float cos = vectorDotProduct(vectorUnitVector(t_vectorA), vectorUnitVector(t_VectorB));
+	if (cos > 1.0f) {
+		cos = 1.0f;
+	}
+	if (cos < -1.0f) {
+		cos = -1.0f;
+	}
+	const float ANGLE_RADIANS = std::acos(cos);
+	const float ANGLE_DEGREES = ANGLE_RADIANS * 180.0f / m_PI;
+	return ANGLE_DEGREES;
 }
 //rotates a vector through a certain amount of degrees and gives the resulting vector.
 //finds new x value with the formula (cosOfAngle * t_vector.x) - (sinOfAngle * t_vector.y)
@@ -63,12 +66,12 @@ float vectorAngleBetween(sf::Vector2f t_vectorA, sf::Vector2f t_VectorB)
 //takes a vector and an angle in radians and returns a vector
 sf::Vector2f vectorRotateBy(sf::Vector2f t_vector, float t_angleRadians)
 {
-	float cosOfAngle = cosf(t_angleRadians);
-	float sinOfAngle = cosf(t_angleRadians);
-	float xOfNewVector = (cosOfAngle * t_vector.x) - (sinOfAngle * t_vector.y);
-	float yOfNewVector = (sinOfAngle * t_vector.x) + (cosOfAngle * t_vector.y);
-	sf::Vector2f vectorRotated(xOfNewVector, yOfNewVector);
-	return vectorRotated;
+	const float COS_OF_ANGLE = std::cos(t_angleRadians);
+	const float SIN_OF_ANGLE = std::cos(t_angleRadians);
+	const float X_COMPONENT = (COS_OF_ANGLE * t_vector.x) - (SIN_OF_ANGLE * t_vector.y);
+	const float Y_COMPONENT = (SIN_OF_ANGLE * t_vector.x) + (COS_OF_ANGLE * t_vector.y);
+	const sf::Vector2f VECTOR_ROTATED(X_COMPONENT, Y_COMPONENT);
+	return VECTOR_ROTATED;
 }
 
 //gets the vector projection of two vectors by multiplying the dot product divided by the magnitude by the first vector divided
@@ -77,8 +80,9 @@ sf::Vector2f vectorRotateBy(sf::Vector2f t_vector, float t_angleRadians)
 sf::Vector2f vectorProjection(sf::Vector2f t_vector, sf::Vector2f t_onto)
 {
 	float dotProduct = vectorDotProduct(t_vector, t_onto);
-	float length = vectorLength(t_onto);
-	sf::Vector2f projectedVector((dotProduct/length) * (t_vector / length));
+	float length = vectorLengthSquared(t_onto);
+	float scale = dotProduct / length;
+	sf::Vector2f projectedVector(scale * t_onto);
 	return projectedVector;
 }
 //vector that is perpendicular to the first vector
@@ -97,8 +101,8 @@ sf::Vector2f vectorRejection(sf::Vector2f t_vector, sf::Vector2f t_onto)
 float vectorScalarProjection(sf::Vector2f t_vector, sf::Vector2f t_onto)
 {
 	float dotProduct = vectorDotProduct(t_vector, t_onto);
-	float lengthSquared = vectorLengthSquared(t_vector);
-	float scalarProjection = dotProduct / lengthSquared;
+	float length = vectorLength(t_onto);
+	float scalarProjection = dotProduct / length;
 	return scalarProjection;
 }
 //finds the unit vector for a given vector by dividing the vector by its magnitude

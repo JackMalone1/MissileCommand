@@ -1,9 +1,9 @@
-// author Peter Lowe
+// author Jack Malone
 #ifndef GAME
 #define GAME
 
 #include <SFML/Graphics.hpp>
-
+const float m_PI = 3.14159265359f;
 class Game
 {
 public:
@@ -31,6 +31,7 @@ private:
 	sf::RectangleShape m_playerBase;
 	sf::VertexArray m_laser{sf::Lines};
 	sf::VertexArray m_asteroid{sf::Lines};
+
 	bool m_exitGame; // control exiting game
 
 };
