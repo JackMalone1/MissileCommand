@@ -67,10 +67,31 @@ void Game::processEvents()
 			{
 				m_exitGame = true;
 			}
+			if (sf::Event::MouseButtonPressed == event.key.code) {
+				processMouseEvents(event);
+			}
 		}
 	}
 }
 
+void Game::processMouseEvents(sf::Event t_event) {
+	if (sf::Mouse::Left == t_event.mouseButton.button) {
+		if (t_event.mouseButton.y < 500) {
+			sf::Vector2f laserEndPoint(t_event.mouseButton.x, t_event.mouseButton.y);
+			//setUpScene(laserEndPoint);
+			updateLaser(laserEndPoint);
+		}
+	}
+}
+
+void Game::updateLaser(sf::Vector2f t_laserEndPoint) {
+	sf::Vertex newLaserEnd(t_laserEndPoint, sf::Color::Black);
+	sf::Vector2f laserStartPoint(400, 420);
+	sf::Vertex laserStart{ laserStartPoint, sf::Color::Blue }; // start point of line
+	m_laser.clear();
+	m_laser.append(laserStart);
+	m_laser.append(newLaserEnd);
+}
 /// <summary>
 /// Update the game world
 /// </summary>
@@ -134,7 +155,7 @@ void Game::setUpScene() {
 	sf::Vector2f laserStartPoint(400, 420);
 	sf::Vertex laserStart{laserStartPoint, sf::Color::Blue}; // start point of line
 	sf::Vector2f laserEndPoint(600, 200);
-	sf::Vertex laserEnd{laserEndPoint, sf::Color::Blue}; // end point of line
+	sf::Vertex laserEnd{laserStartPoint, sf::Color::Blue}; // end point of line
 	sf::Vector2f asteroidStartPoint(200,50);
 	sf::Vector2f asteroidEndPoint(500,500);
 	sf::Vertex asteroidStart(asteroidStartPoint,sf::Color::Black);

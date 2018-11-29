@@ -14,12 +14,14 @@ public:
 private:
 
 	void processEvents();
+	void processMouseEvents(sf::Event t_event);
 	void update(sf::Time t_deltaTime);
 	void render();
 
 	void setupFontAndText();
 	void setupSprite();
 	void setUpScene();
+	void updateLaser(sf::Vector2f t_laserEndPoint);
 
 	sf::RenderWindow m_window; // main SFML window
 	sf::Font m_ArialBlackfont; // font used by message
