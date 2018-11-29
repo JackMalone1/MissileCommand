@@ -1,6 +1,7 @@
 // author Jack Malone
 //got help from Ben Miller on how to do collision between asteroid and the explosoion
 #include "Game.h"
+#include "MyVector2.h"
 #include <iostream>
 
 
@@ -91,6 +92,13 @@ void Game::updateLaser(sf::Vector2f t_laserEnd) {
 	sf::Vertex laserStartPoint{ laserStart, sf::Color::Black }; // start point of line
 	m_laser.append(laserStartPoint);
 	m_laser.append(newLaserEnd);
+	moveLaser(t_laserEnd);
+}
+void Game::moveLaser(sf::Vector2f t_laserEnd) {
+	sf::Vector2f laserStart = sf::Vector2f{ 400, 420 };
+	sf::Vector2f endPoint = t_laserEnd - laserStart;
+	sf::Vector2f unitVector = vectorUnitVector(endPoint);
+	//m_laser.append(unitVector);
 }
 /// <summary>
 /// Update the game world

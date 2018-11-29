@@ -22,6 +22,7 @@ private:
 	void setupSprite();
 	void setUpScene();
 	void updateLaser(sf::Vector2f t_laserEndPoint);
+	void moveLaser(sf::Vector2f t_laserEnd);
 
 	sf::RenderWindow m_window; // main SFML window
 	sf::Font m_ArialBlackfont; // font used by message
