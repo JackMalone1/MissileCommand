@@ -67,9 +67,9 @@ void Game::processEvents()
 			{
 				m_exitGame = true;
 			}
-			if (sf::Event::MouseButtonPressed == event.key.code) {
-				processMouseEvents(event);
-			}
+		}
+		if (sf::Event::MouseButtonPressed == event.type) {
+			processMouseEvents(event);
 		}
 	}
 }
@@ -77,19 +77,19 @@ void Game::processEvents()
 void Game::processMouseEvents(sf::Event t_event) {
 	if (sf::Mouse::Left == t_event.mouseButton.button) {
 		if (t_event.mouseButton.y < 500) {
-			sf::Vector2f laserEndPoint(t_event.mouseButton.x, t_event.mouseButton.y);
-			//setUpScene(laserEndPoint);
-			updateLaser(laserEndPoint);
+			m_laser.clear();
+			sf::Vector2f laserEnd = sf::Vector2f{ static_cast<float>(t_event.mouseButton.x), static_cast<float>(t_event.mouseButton.y) };
+			updateLaser(laserEnd);
 		}
 	}
 }
 
-void Game::updateLaser(sf::Vector2f t_laserEndPoint) {
-	sf::Vertex newLaserEnd(t_laserEndPoint, sf::Color::Black);
-	sf::Vector2f laserStartPoint(400, 420);
-	sf::Vertex laserStart{ laserStartPoint, sf::Color::Blue }; // start point of line
-	m_laser.clear();
-	m_laser.append(laserStart);
+void Game::updateLaser(sf::Vector2f t_laserEnd) {
+
+	sf::Vertex newLaserEnd{ t_laserEnd, sf::Color::Black };
+	sf::Vector2f laserStart = sf::Vector2f{ 400, 420 };
+	sf::Vertex laserStartPoint{ laserStart, sf::Color::Black }; // start point of line
+	m_laser.append(laserStartPoint);
 	m_laser.append(newLaserEnd);
 }
 /// <summary>
@@ -152,10 +152,6 @@ void Game::setUpScene() {
 	sf::Vector2f groundSize(800, 100);
 	sf::Vector2f powerbarSize(200,50);
 	sf::Vector2f playerBaseSize(80,80);
-	sf::Vector2f laserStartPoint(400, 420);
-	sf::Vertex laserStart{laserStartPoint, sf::Color::Blue}; // start point of line
-	sf::Vector2f laserEndPoint(600, 200);
-	sf::Vertex laserEnd{laserStartPoint, sf::Color::Blue}; // end point of line
 	sf::Vector2f asteroidStartPoint(200,50);
 	sf::Vector2f asteroidEndPoint(500,500);
 	sf::Vertex asteroidStart(asteroidStartPoint,sf::Color::Black);
@@ -168,9 +164,7 @@ void Game::setUpScene() {
 	m_powerbar.setPosition(50, 525);
 	m_playerBase.setSize(playerBaseSize);
 	m_playerBase.setFillColor(sf::Color::Red);
-	m_playerBase.setPosition(m_window.getSize().x / 2.0 - 40, 420);
-	m_laser.append(laserStart);
-	m_laser.append(laserEnd);
+	m_playerBase.setPosition((float)(m_window.getSize().x / 2.0 - 40), 420);
 	m_asteroid.append(asteroidStart);
 	m_asteroid.append(asteroidEnd);
 }
