@@ -92,12 +92,14 @@ void Game::updateLaser(sf::Vector2f t_laserEnd) {
 	sf::Vertex laserStartPoint{ laserStart, sf::Color::Black }; // start point of line
 	m_laser.append(laserStartPoint);
 	m_laser.append(newLaserEnd);
-	moveLaser(t_laserEnd);
+	//sf::Vector2f unitVector = vectorUnitVector(t_laserEnd);
+	//m_laser.append(unitVector);
+	//moveLaser(unitVector);
 }
 void Game::moveLaser(sf::Vector2f t_laserEnd) {
-	sf::Vector2f laserStart = sf::Vector2f{ 400, 420 };
-	sf::Vector2f endPoint = t_laserEnd - laserStart;
-	sf::Vector2f unitVector = vectorUnitVector(endPoint);
+	//sf::Vector2f laserStart = sf::Vector2f{ 400, 420 };
+	//sf::Vector2f endPoint = t_laserEnd - laserStart;
+	//sf::Vector2f unitVector = vectorUnitVector(endPoint);
 	//m_laser.append(unitVector);
 }
 /// <summary>

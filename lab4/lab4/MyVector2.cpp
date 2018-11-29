@@ -110,9 +110,9 @@ float vectorScalarProjection(sf::Vector2f t_vector, sf::Vector2f t_onto)
 sf::Vector2f vectorUnitVector(sf::Vector2f t_vector)
 {
 	sf::Vector2f unitVector(0.0f, 0.0f);
-	float length = vectorLength(t_vector);
-	if (length != 0) {
-		unitVector /= length;
+	const float LENGTH = vectorLength(t_vector);
+	if (LENGTH != 0.0f) {
+		unitVector = sf::Vector2f{t_vector.x / LENGTH, t_vector.y / LENGTH};
 	}
 	return unitVector;
 }
