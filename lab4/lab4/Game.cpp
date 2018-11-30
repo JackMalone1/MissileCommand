@@ -90,17 +90,17 @@ void Game::updateLaser(sf::Vector2f t_laserEnd) {
 	sf::Vertex newLaserEnd{ t_laserEnd, sf::Color::Black };
 	sf::Vector2f laserStart = sf::Vector2f{ 400, 420 };
 	sf::Vertex laserStartPoint{ laserStart, sf::Color::Black }; // start point of line
+	sf::Vector2f laserEnd = sf::Vector2f{ 400,420 };
+	sf::Vertex laserEndPoint{ laserEnd, sf::Color::Black };
 	m_laser.append(laserStartPoint);
 	m_laser.append(newLaserEnd);
-	//sf::Vector2f unitVector = vectorUnitVector(t_laserEnd);
-	//m_laser.append(unitVector);
-	//moveLaser(unitVector);
+	sf::Vector2f unitVector = vectorUnitVector(t_laserEnd);
+	moveLaser(unitVector, laserEnd, t_laserEnd);
 }
-void Game::moveLaser(sf::Vector2f t_laserEnd) {
-	//sf::Vector2f laserStart = sf::Vector2f{ 400, 420 };
-	//sf::Vector2f endPoint = t_laserEnd - laserStart;
-	//sf::Vector2f unitVector = vectorUnitVector(endPoint);
-	//m_laser.append(unitVector);
+void Game::moveLaser(sf::Vector2f t_unitVector, sf::Vector2f t_laserEndPoint, sf::Vector2f t_mouseClick) {
+	if (t_laserEndPoint.y <= t_mouseClick.y) {
+		t_laserEndPoint = t_unitVector + t_laserEndPoint;
+	}
 }
 /// <summary>
 /// Update the game world
