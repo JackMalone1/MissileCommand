@@ -34,9 +34,14 @@ private:
 	sf::RectangleShape m_playerBase;
 	sf::VertexArray m_laser{sf::Lines};
 	sf::VertexArray m_asteroid{sf::Lines};
+	//sf::Vector2f m_laserEnd;
+	sf::Vector2f m_unitVector;
+	sf::Vector2f m_laserEnd = sf::Vector2f{ 400,420 };
+	sf::Vertex m_laserEndPoint{ m_laserEnd, sf::Color::Black };
+	sf::Vector2f m_mouseClick;
 
 	bool m_exitGame; // control exiting game
-
+	bool m_updateLaser = false;
 };
 
 #endif // !GAME

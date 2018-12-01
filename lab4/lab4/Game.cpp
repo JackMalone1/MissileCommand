@@ -1,5 +1,6 @@
 // author Jack Malone
 //got help from Ben Miller on how to do collision between asteroid and the explosoion
+//got help from Josh
 #include "Game.h"
 #include "MyVector2.h"
 #include <iostream>
@@ -70,6 +71,7 @@ void Game::processEvents()
 			}
 		}
 		if (sf::Event::MouseButtonPressed == event.type) {
+			m_laser.clear();
 			processMouseEvents(event);
 		}
 	}
@@ -78,9 +80,9 @@ void Game::processEvents()
 void Game::processMouseEvents(sf::Event t_event) {
 	if (sf::Mouse::Left == t_event.mouseButton.button) {
 		if (t_event.mouseButton.y < 500) {
-			m_laser.clear();
-			sf::Vector2f laserEnd = sf::Vector2f{ static_cast<float>(t_event.mouseButton.x), static_cast<float>(t_event.mouseButton.y) };
-			updateLaser(laserEnd);
+			
+			sf::Vector2f m_mouseClick = sf::Vector2f{ static_cast<float>(t_event.mouseButton.x), static_cast<float>(t_event.mouseButton.y) };
+			updateLaser(m_mouseClick);
 		}
 	}
 }
@@ -90,20 +92,23 @@ void Game::updateLaser(sf::Vector2f t_laserEnd) {
 	sf::Vertex newLaserEnd{ t_laserEnd, sf::Color::Black };
 	sf::Vector2f laserStart = sf::Vector2f{ 400, 420 };
 	sf::Vertex laserStartPoint{ laserStart, sf::Color::Black }; // start point of line
-	sf::Vector2f laserEnd = sf::Vector2f{ 400,420 };
-	sf::Vertex laserEndPoint{ laserEnd, sf::Color::Black };
+	
 	m_laser.append(laserStartPoint);
-	m_laser.append(newLaserEnd);
-	sf::Vector2f unitVector = vectorUnitVector(t_laserEnd);
-	moveLaser(unitVector, laserEnd, t_laserEnd);
+	//m_laser.append(newLaserEnd);
+	sf::Vector2f m_unitVector = vectorUnitVector(t_laserEnd);
+	m_updateLaser = true;
+	//moveLaser(unitVector, laserEnd, t_laserEnd);
 }
 void Game::moveLaser(sf::Vector2f t_unitVector, sf::Vector2f t_laserEndPoint, sf::Vector2f t_mouseClick) {
-	//sf::Vector2f velocity{ 120.0f,120.0f };
-	//t_unitVector = { t_unitVector.x / velocity.x,t_unitVector.y / velocity.y };
+
 	if (t_laserEndPoint.y >= t_mouseClick.y) {
-		t_laserEndPoint = (t_unitVector) - t_laserEndPoint;
-		m_laser.append(t_laserEndPoint);
+		t_laserEndPoint = t_laserEndPoint - t_unitVector;
+		//sf::Vertex laserEnd{ t_laserEndPoint, sf::Color::Black };
 	}
+	else {
+		m_updateLaser = false;
+	}
+	m_laser.append(m_laserEndPoint);
 }
 /// <summary>
 /// Update the game world
@@ -114,6 +119,10 @@ void Game::update(sf::Time t_deltaTime)
 	if (m_exitGame)
 	{
 		m_window.close();
+	}
+	
+	if (m_updateLaser == true) {
+		moveLaser(m_unitVector, m_laserEnd, m_mouseClick);
 	}
 }
 
