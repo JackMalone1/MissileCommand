@@ -98,8 +98,11 @@ void Game::updateLaser(sf::Vector2f t_laserEnd) {
 	moveLaser(unitVector, laserEnd, t_laserEnd);
 }
 void Game::moveLaser(sf::Vector2f t_unitVector, sf::Vector2f t_laserEndPoint, sf::Vector2f t_mouseClick) {
-	if (t_laserEndPoint.y <= t_mouseClick.y) {
-		t_laserEndPoint = t_unitVector + t_laserEndPoint;
+	//sf::Vector2f velocity{ 120.0f,120.0f };
+	//t_unitVector = { t_unitVector.x / velocity.x,t_unitVector.y / velocity.y };
+	if (t_laserEndPoint.y >= t_mouseClick.y) {
+		t_laserEndPoint = (t_unitVector) - t_laserEndPoint;
+		m_laser.append(t_laserEndPoint);
 	}
 }
 /// <summary>
