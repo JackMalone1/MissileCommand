@@ -40,6 +40,7 @@ private:
 	sf::Vertex m_laserEndPoint{ m_laserEnd, sf::Color::Black };
 	sf::Vector2f m_mouseClick;
 
+	int velocity = 5;
 	bool m_exitGame; // control exiting game
 	bool m_updateLaser = false;
 };
