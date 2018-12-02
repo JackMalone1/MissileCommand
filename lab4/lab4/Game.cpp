@@ -83,6 +83,8 @@ void Game::processMouseEvents(sf::Event t_event) {
 			m_mouseClick = sf::Vector2f{ static_cast<float>(t_event.mouseButton.x), static_cast<float>(t_event.mouseButton.y) };
 			m_laserEnd = sf::Vector2f{ 400,420 };
 			m_updateLaser = true;
+			m_exploding = false;
+			m_explosionRadius = 10;
 			m_laserlength = vectorLength(m_mouseClick - m_laserStart);
 		}
 	}
@@ -100,15 +102,23 @@ void Game::moveLaser() {
 	}
 	else {
 		m_updateLaser = false;		
+		m_exploding = true;
 	}
 }
 
 void Game::drawExplosion() {
 	m_laser.clear();
-	m_explosion.setRadius(10);
+	if (m_explosionRadius < 40) {
+		m_explosionRadius += 1;
+		m_explosion.setRadius(m_explosionRadius);
+	}
+	else if(m_explosionRadius >= 40){
+		m_explosion.setPosition(1000, 1000);
+	}
 	m_explosion.setFillColor(sf::Color::Red);
-	m_explosion.setPosition(m_laserEnd);
-	m_laserEnd = sf::Vector2f{ 400,420 };
+	sf::Vector2f m_explosionPosition{ m_laserEnd };
+	m_explosion.setPosition(m_explosionPosition);
+
 }
 /// <summary>
 /// Update the game world
@@ -124,7 +134,7 @@ void Game::update(sf::Time t_deltaTime)
 	if (m_updateLaser) {
 		moveLaser();
 	}
-	if (!m_updateLaser) {
+	if (m_exploding) {
 		drawExplosion();
 	}
 }
@@ -199,4 +209,6 @@ void Game::setUpScene() {
 	m_asteroid.append(asteroidStart);
 	m_asteroid.append(asteroidEnd);
 	m_explosion.setOrigin(m_explosion.getRadius() / 2, m_explosion.getRadius() / 2);
+	sf::Vector2f m_explosionPosition{ -1000,1000 };
+	m_explosion.setPosition(m_explosionPosition);
 }
