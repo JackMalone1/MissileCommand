@@ -81,28 +81,27 @@ void Game::processMouseEvents(sf::Event t_event) {
 	if (sf::Mouse::Left == t_event.mouseButton.button) {
 		if (t_event.mouseButton.y < 500) {
 			m_mouseClick = sf::Vector2f{ static_cast<float>(t_event.mouseButton.x), static_cast<float>(t_event.mouseButton.y) };
-			updateLaser(m_mouseClick);
 			m_laserEnd = sf::Vector2f{ 400,420 };
+			m_updateLaser = true;
 		}
 	}
 }
 
-void Game::updateLaser(sf::Vector2f t_laserEnd) {
-	m_updateLaser = true;
-}
-void Game::moveLaser(sf::Vector2f t_unitVector, sf::Vector2f t_laserEndPoint, sf::Vector2f t_mouseClick) {
+void Game::moveLaser() {
 	m_laser.append(m_laserStartPoint);
 	sf::Vector2f m_unitVector = vectorUnitVector(m_mouseClick - m_laserEnd);
 	m_unitVector = { m_unitVector.x * 5,m_unitVector.y * 5 };
-	if (m_laserEnd.y >= m_mouseClick.y || m_laserEnd.y <= m_mouseClick.y) {
-		m_laserEnd = m_laserEnd + (m_unitVector);
-		sf::Vertex m_laserEndPoint{ m_laserEnd,sf::Color::Black };
-		m_laser.append(m_laserEndPoint);
-	}
-	else {
-		m_updateLaser = false;
-		m_laserEnd = sf::Vector2f{ 400,420 };
-	}
+	m_laserEnd = m_laserEnd + (m_unitVector);
+	sf::Vertex m_laserEndPoint{ m_laserEnd,sf::Color::Black };
+	m_laser.append(m_laserEndPoint);
+}
+
+void Game::drawExplosion() {
+	m_laser.clear();
+	m_explosion.setRadius(10);
+	m_explosion.setFillColor(sf::Color::Red);
+	m_explosion.setPosition(m_laserEnd);
+	m_laserEnd = sf::Vector2f{ 400,420 };
 }
 /// <summary>
 /// Update the game world
@@ -116,7 +115,7 @@ void Game::update(sf::Time t_deltaTime)
 	}
 	
 	if (m_updateLaser) {
-		moveLaser(m_unitVector, m_laserEnd, m_mouseClick);
+		moveLaser();
 	}
 }
 
@@ -130,6 +129,7 @@ void Game::render()
 	m_window.draw(m_powerbar);
 	m_window.draw(m_playerBase);
 	m_window.draw(m_laser);
+	m_window.draw(m_explosion);
 	m_window.draw(m_asteroid);
 	m_window.draw(m_altitudeText);
 	m_window.display();
@@ -154,7 +154,7 @@ void Game::setupFontAndText()
 /// load the texture and setup the sprite for the logo
 /// </summary>
 void Game::setupSprite()
-{
+{/*
 	if (!m_logoTexture.loadFromFile("ASSETS\\IMAGES\\SFML-LOGO.png"))
 	{
 		// simple error message if previous call fails
@@ -162,6 +162,7 @@ void Game::setupSprite()
 	}
 	m_logoSprite.setTexture(m_logoTexture);
 	m_logoSprite.setPosition(300.0f, 180.0f);
+	*/
 }
 
 void Game::setUpScene() {
