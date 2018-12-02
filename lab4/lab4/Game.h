@@ -36,10 +36,13 @@ private:
 	sf::VertexArray m_asteroid{sf::Lines};
 	//sf::Vector2f m_laserEnd;
 	sf::Vector2f m_unitVector;
-	sf::Vector2f m_laserEnd = sf::Vector2f{ 400,420 };
-	sf::Vertex m_laserEndPoint{ m_laserEnd, sf::Color::Black };
+	sf::Vector2f m_laserEnd;
+	sf::Vertex m_laserEndPoint;
 	sf::Vector2f m_mouseClick;
-
+	sf::Vector2f m_laserStart = sf::Vector2f{ 400, 420 };
+	sf::Vertex m_laserStartPoint{ m_laserStart, sf::Color::Black }; // start point of line
+	enum m_laserState{firing,exploding,notFiring};
+	m_laserState laserState = notFiring;
 	int velocity = 5;
 	bool m_exitGame; // control exiting game
 	bool m_updateLaser = false;

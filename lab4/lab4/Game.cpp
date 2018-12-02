@@ -80,35 +80,29 @@ void Game::processEvents()
 void Game::processMouseEvents(sf::Event t_event) {
 	if (sf::Mouse::Left == t_event.mouseButton.button) {
 		if (t_event.mouseButton.y < 500) {
-			
 			m_mouseClick = sf::Vector2f{ static_cast<float>(t_event.mouseButton.x), static_cast<float>(t_event.mouseButton.y) };
 			updateLaser(m_mouseClick);
+			m_laserEnd = sf::Vector2f{ 400,420 };
 		}
 	}
 }
 
 void Game::updateLaser(sf::Vector2f t_laserEnd) {
-
-	//sf::Vertex newLaserEnd{ t_laserEnd, sf::Color::Black };
-	sf::Vector2f laserStart = sf::Vector2f{ 400, 420 };
-	sf::Vertex laserStartPoint{ laserStart, sf::Color::Black }; // start point of line
-	
-	m_laser.append(laserStartPoint);
-	//m_laser.append(newLaserEnd);
-	//sf::Vector2f m_unitVector = vectorUnitVector(t_laserEnd);
 	m_updateLaser = true;
 }
 void Game::moveLaser(sf::Vector2f t_unitVector, sf::Vector2f t_laserEndPoint, sf::Vector2f t_mouseClick) {
-	sf::Vector2f m_unitVector = vectorUnitVector(t_mouseClick);
-	if (t_laserEndPoint.y >= t_mouseClick.y) {
-		m_laserEnd = m_laserEnd - t_unitVector;
-		
-		//t_laserEndPoint.y += velocity;
+	m_laser.append(m_laserStartPoint);
+	sf::Vector2f m_unitVector = vectorUnitVector(m_mouseClick - m_laserEnd);
+	m_unitVector = { m_unitVector.x * 5,m_unitVector.y * 5 };
+	if (m_laserEnd.y >= m_mouseClick.y || m_laserEnd.y <= m_mouseClick.y) {
+		m_laserEnd = m_laserEnd + (m_unitVector);
+		sf::Vertex m_laserEndPoint{ m_laserEnd,sf::Color::Black };
+		m_laser.append(m_laserEndPoint);
 	}
 	else {
 		m_updateLaser = false;
+		m_laserEnd = sf::Vector2f{ 400,420 };
 	}
-	m_laser.append(m_laserEndPoint);
 }
 /// <summary>
 /// Update the game world
@@ -121,7 +115,7 @@ void Game::update(sf::Time t_deltaTime)
 		m_window.close();
 	}
 	
-	if (m_updateLaser == true) {
+	if (m_updateLaser) {
 		moveLaser(m_unitVector, m_laserEnd, m_mouseClick);
 	}
 }
