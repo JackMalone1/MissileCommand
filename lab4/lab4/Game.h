@@ -32,6 +32,7 @@ private:
 	sf::RectangleShape m_powerbar;
 	sf::RectangleShape m_playerBase;
 	sf::CircleShape m_explosion;
+	
 	sf::VertexArray m_laser{sf::Lines};
 	sf::VertexArray m_asteroid{sf::Lines};
 	sf::Vector2f m_unitVector;
@@ -40,9 +41,11 @@ private:
 	sf::Vector2f m_mouseClick;
 	sf::Vector2f m_laserStart = sf::Vector2f{ 400, 420 };
 	sf::Vertex m_laserStartPoint{ m_laserStart, sf::Color::Black }; // start point of line
+	float m_laserlength = 0.0f;
+	float m_currentLaserLength = 0.0f;
 	//enum m_laserState{firing,exploding,notFiring};
 	//m_laserState laserState = notFiring;
-	int velocity = 5;
+	int m_velocityLaser = 5;
 	bool m_exitGame; // control exiting game
 	bool m_updateLaser = false;
 };
