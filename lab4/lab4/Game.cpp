@@ -17,6 +17,7 @@ Game::Game() :
 	setupFontAndText(); // load font 
 	setupSprite(); // load texture
 	setUpScene();
+	createAsteroid();
 }
 
 /// <summary>
@@ -72,7 +73,10 @@ void Game::processEvents()
 		}
 		if (sf::Event::MouseButtonPressed == event.type) {
 			m_laser.clear();
-			processMouseEvents(event);
+			if (!m_exploding) {
+				processMouseEvents(event);
+			}
+			
 		}
 	}
 }
@@ -83,7 +87,6 @@ void Game::processMouseEvents(sf::Event t_event) {
 			m_mouseClick = sf::Vector2f{ static_cast<float>(t_event.mouseButton.x), static_cast<float>(t_event.mouseButton.y) };
 			m_laserEnd = sf::Vector2f{ 400,420 };
 			m_updateLaser = true;
-			m_exploding = false;
 			m_explosionRadius = 10;
 			m_laserlength = vectorLength(m_mouseClick - m_laserStart);
 		}
@@ -109,15 +112,31 @@ void Game::moveLaser() {
 void Game::drawExplosion() {
 	m_laser.clear();
 	if (m_explosionRadius < 40) {
-		m_explosionRadius += 1;
-		m_explosion.setRadius(m_explosionRadius);
+		m_explosionRadius += 0.5;
+		m_explosion.setRadius(float(m_explosionRadius));
+		m_explosion.setOrigin(m_explosion.getRadius() / 2, m_explosion.getRadius() / 2);
+		m_explosion.setFillColor(sf::Color::Red);
+		sf::Vector2f m_explosionPosition{ m_laserEnd };
+		m_explosion.setPosition(m_explosionPosition);
 	}
-	else if(m_explosionRadius >= 40){
-		m_explosion.setPosition(1000, 1000);
+	else if(m_explosionRadius >= 39){
+		sf::Vector2f m_explosionPosition{ 1000,1000 };
+		m_exploding = false;
 	}
-	m_explosion.setFillColor(sf::Color::Red);
-	sf::Vector2f m_explosionPosition{ m_laserEnd };
-	m_explosion.setPosition(m_explosionPosition);
+}
+
+void Game::createAsteroid() {
+	m_asteroid.clear();
+	sf::Vector2f asteroidStartPoint(float(rand() % 800), float(0));
+	sf::Vertex asteroidStart(asteroidStartPoint, sf::Color::Black);
+	m_asteroid.append(asteroidStart);
+	sf::Vector2f asteroidEndPoint(float(rand() % 800),float(500));
+	sf::Vertex asteroidEnd(asteroidEndPoint, sf::Color::Black);
+	m_asteroid.append(asteroidEnd);
+}
+void Game::moveAsteroid() {
+
+
 
 }
 /// <summary>
@@ -130,7 +149,7 @@ void Game::update(sf::Time t_deltaTime)
 	{
 		m_window.close();
 	}
-	
+	moveAsteroid();
 	if (m_updateLaser) {
 		moveLaser();
 	}
@@ -151,7 +170,7 @@ void Game::render()
 	if (m_updateLaser) {
 		m_window.draw(m_laser);
 	}
-	else{
+	else if(m_exploding) {
 		m_window.draw(m_explosion);
 	}
 	m_window.draw(m_asteroid);
@@ -193,10 +212,6 @@ void Game::setUpScene() {
 	sf::Vector2f groundSize(800, 100);
 	sf::Vector2f powerbarSize(200,50);
 	sf::Vector2f playerBaseSize(80,80);
-	sf::Vector2f asteroidStartPoint(200,50);
-	sf::Vector2f asteroidEndPoint(500,500);
-	sf::Vertex asteroidStart(asteroidStartPoint,sf::Color::Black);
-	sf::Vertex asteroidEnd(asteroidEndPoint,sf::Color::Black);
 	m_ground.setSize(groundSize);
 	m_ground.setFillColor(sf::Color::Green);
 	m_ground.setPosition(0, 500);
@@ -206,8 +221,6 @@ void Game::setUpScene() {
 	m_playerBase.setSize(playerBaseSize);
 	m_playerBase.setFillColor(sf::Color::Red);
 	m_playerBase.setPosition((float)(m_window.getSize().x / 2.0 - 40), 420);
-	m_asteroid.append(asteroidStart);
-	m_asteroid.append(asteroidEnd);
 	m_explosion.setOrigin(m_explosion.getRadius() / 2, m_explosion.getRadius() / 2);
 	sf::Vector2f m_explosionPosition{ -1000,1000 };
 	m_explosion.setPosition(m_explosionPosition);

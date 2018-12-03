@@ -23,6 +23,8 @@ private:
 	void setUpScene();
 	void moveLaser();
 	void drawExplosion();
+	void createAsteroid();
+	void moveAsteroid();
 
 	sf::RenderWindow m_window; // main SFML window
 	sf::Font m_ArialBlackfont; // font used by message
@@ -45,7 +47,7 @@ private:
 	float m_currentLaserLength = 0.0f;
 	//enum m_laserState{firing,exploding,notFiring};
 	//m_laserState laserState = notFiring;
-	int m_explosionRadius = 10;
+	double m_explosionRadius = 5;
 	int m_velocityLaser = 5;
 	bool m_exitGame; // control exiting game
 	bool m_updateLaser = false;

@@ -30,6 +30,11 @@
 /// <returns>zero</returns>
 int main()
 {
+#ifdef _DEBUG
+	srand(27u);
+#else
+	srand(static_cast<unsigned int>(time(nullptr)));
+#endif // _Debug
 	Game game;
 	game.run();
 	return 0;
