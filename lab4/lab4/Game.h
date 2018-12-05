@@ -43,7 +43,7 @@ private:
 	sf::Vector2f m_mouseClick;
 	sf::Vector2f m_laserStart = sf::Vector2f{ 400, 420 };
 	sf::Vertex m_laserStartPoint{ m_laserStart, sf::Color::Black }; // start point of line
-	sf::Vector2f m_currentAsteroidEnd{ 0,0 };
+	sf::Vector2f m_currentAsteroidEnd;
 	sf::Vertex m_asteroidEndCurrent{ m_currentAsteroidEnd,sf::Color::Black };
 	sf::Vector2f m_asteroidEndPoint = sf::Vector2f{ 0.0f, 0.0f };
 	sf::Vertex m_asteroidEnd{ m_asteroidEndPoint, sf::Color::Black };
