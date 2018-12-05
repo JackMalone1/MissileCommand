@@ -48,6 +48,8 @@ private:
 	sf::Vector2f m_asteroidEndPoint = sf::Vector2f{ 0.0f, 0.0f };
 	sf::Vertex m_asteroidEnd{ m_asteroidEndPoint, sf::Color::Black };
 	sf::Vector2f asteroidStartPoint{0, 0};
+	sf::Vector2f m_asteroidStartPoint;
+	sf::Vertex m_asteroidStart;
 	float m_asteroidLength = 0.0f;
 	float m_asteroidCurrentLength = 0.0f;
 	float m_laserLength = 0.0f;

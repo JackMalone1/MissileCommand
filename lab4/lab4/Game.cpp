@@ -1,6 +1,7 @@
 // author Jack Malone
 //got help from Ben Miller on how to do collision between asteroid and the explosoion
 //got help from Josh
+//got help from Aaron
 #include "Game.h"
 #include "MyVector2.h"
 #include <iostream>
@@ -127,24 +128,24 @@ void Game::drawExplosion() {
 
 void Game::createAsteroid() {
 	m_asteroid.clear();
-	sf::Vector2f asteroidStartPoint(static_cast<float>(rand() % 800), static_cast<float>(0));
-	sf::Vertex asteroidStart(asteroidStartPoint, sf::Color::Black);
-	m_asteroid.append(asteroidStart);
-	m_currentAsteroidEnd = asteroidStartPoint;
+	sf::Vector2f m_asteroidStartPoint(static_cast<float>(rand() % 800), static_cast<float>(0));
+	sf::Vertex m_asteroidStart(m_asteroidStartPoint, sf::Color::Black);
+	
+	m_currentAsteroidEnd = m_asteroidStartPoint;
 	sf::Vertex asteroidEndCurrent{ m_currentAsteroidEnd,sf::Color::Black };
 	m_asteroid.append(asteroidEndCurrent);
 	m_asteroidEndPoint = sf::Vector2f(static_cast<float>(rand() % 800), static_cast<float>(500));
 	//sf::Vector2f m_asteroidEndPoint(float(rand() % 800),float(500));
 	sf::Vertex m_asteroidEnd(m_asteroidEndPoint, sf::Color::Black);
-	m_asteroidLength = vectorLength(m_asteroidEndPoint - asteroidStartPoint);
+	m_asteroidLength = vectorLength(m_asteroidEndPoint - m_asteroidStartPoint);
 	m_setUpAsteroid = false;
 	m_moveAsteroid = true;
 }
 void Game::moveAsteroid() {
-
+	m_asteroid.append(m_asteroidStart);
 	sf::Vector2f m_unitVectorAsteroid = vectorUnitVector(m_asteroidEndPoint - m_currentAsteroidEnd);
-	m_asteroidCurrentLength = vectorLength(m_currentAsteroidEnd - asteroidStartPoint);
-	if (m_asteroidCurrentLength < m_asteroidLength && m_currentAsteroidEnd.y < 500) {
+	m_asteroidCurrentLength = vectorLength(m_currentAsteroidEnd - m_asteroidStartPoint);
+	if (m_asteroidCurrentLength > m_asteroidLength && m_currentAsteroidEnd.y < 500) {
 		m_unitVectorAsteroid = { m_unitVectorAsteroid.x * m_velocityLaser,m_unitVectorAsteroid.y * m_velocityLaser };
 		m_currentAsteroidEnd = m_currentAsteroidEnd + (m_unitVectorAsteroid);
 		sf::Vertex m_asteroidEndCurrent{ m_currentAsteroidEnd,sf::Color::Black };
@@ -156,8 +157,20 @@ void Game::moveAsteroid() {
 		m_asteroidCurrentLength = 0.0f;
 		m_asteroidLength = 0.0f;
 	}
-
-
+	/*m_laser.append(m_laserStartPoint);
+	sf::Vector2f m_unitVector = vectorUnitVector(m_mouseClick - m_laserEnd);
+	m_currentLaserLength = vectorLength(m_laserEnd - m_laserStart);
+	if (m_currentLaserLength < m_laserLength) {
+		m_unitVector = { m_unitVector.x * m_velocityLaser,m_unitVector.y * m_velocityLaser };
+		m_laserEnd = m_laserEnd + (m_unitVector);
+		sf::Vertex m_laserEndPoint{ m_laserEnd,sf::Color::Black };
+		m_laser.append(m_laserEndPoint);
+	}
+	else {
+		m_updateLaser = false;
+		m_exploding = true;
+	}
+*/
 }
 /// <summary>
 /// Update the game world
