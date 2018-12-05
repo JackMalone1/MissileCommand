@@ -88,7 +88,7 @@ void Game::processMouseEvents(sf::Event t_event) {
 			m_laserEnd = sf::Vector2f{ 400,420 };
 			m_updateLaser = true;
 			m_explosionRadius = 10;
-			m_laserlength = vectorLength(m_mouseClick - m_laserStart);
+			m_laserLength = vectorLength(m_mouseClick - m_laserStart);
 		}
 	}
 }
@@ -97,7 +97,7 @@ void Game::moveLaser() {
 	m_laser.append(m_laserStartPoint);
 	sf::Vector2f m_unitVector = vectorUnitVector(m_mouseClick - m_laserEnd);
 	m_currentLaserLength = vectorLength(m_laserEnd - m_laserStart);
-	if (m_currentLaserLength < m_laserlength) {
+	if (m_currentLaserLength < m_laserLength) {
 		m_unitVector = { m_unitVector.x * m_velocityLaser,m_unitVector.y * m_velocityLaser };
 		m_laserEnd = m_laserEnd + (m_unitVector);
 		sf::Vertex m_laserEndPoint{ m_laserEnd,sf::Color::Black };
@@ -130,12 +130,32 @@ void Game::createAsteroid() {
 	sf::Vector2f asteroidStartPoint(float(rand() % 800), float(0));
 	sf::Vertex asteroidStart(asteroidStartPoint, sf::Color::Black);
 	m_asteroid.append(asteroidStart);
-	sf::Vector2f asteroidEndPoint(float(rand() % 800),float(500));
-	sf::Vertex asteroidEnd(asteroidEndPoint, sf::Color::Black);
-	m_asteroid.append(asteroidEnd);
+	m_currentAsteroidEnd = asteroidStartPoint;
+	sf::Vertex asteroidEndCurrent{ m_currentAsteroidEnd,sf::Color::Black };
+	m_asteroid.append(asteroidEndCurrent);
+	m_asteroidEndPoint = sf::Vector2f(float(rand() % 800), float(500));
+	//sf::Vector2f m_asteroidEndPoint(float(rand() % 800),float(500));
+	sf::Vertex m_asteroidEnd(m_asteroidEndPoint, sf::Color::Black);
+	m_asteroidLength = vectorLength(m_asteroidEndPoint - asteroidStartPoint);
+	m_setUpAsteroid = false;
+	m_moveAsteroid = true;
 }
 void Game::moveAsteroid() {
 
+	sf::Vector2f m_unitVectorAsteroid = vectorUnitVector(m_asteroidEndPoint - m_currentAsteroidEnd);
+	m_asteroidCurrentLength = vectorLength(m_currentAsteroidEnd - asteroidStartPoint);
+	if (m_asteroidCurrentLength < m_asteroidLength) {
+		m_unitVectorAsteroid = { m_unitVectorAsteroid.x * m_velocityLaser,m_unitVectorAsteroid.y * m_velocityLaser };
+		m_currentAsteroidEnd = m_currentAsteroidEnd + (m_unitVectorAsteroid);
+		sf::Vertex m_asteroidEndCurrent{ m_currentAsteroidEnd,sf::Color::Black };
+		m_asteroid.append(m_asteroidEndCurrent);
+	}
+	else {
+		m_setUpAsteroid = true;
+		m_moveAsteroid = false;
+		m_asteroidCurrentLength = 0.0f;
+		m_asteroidLength = 0.0f;
+	}
 
 
 }
@@ -149,12 +169,17 @@ void Game::update(sf::Time t_deltaTime)
 	{
 		m_window.close();
 	}
-	moveAsteroid();
 	if (m_updateLaser) {
 		moveLaser();
 	}
 	if (m_exploding) {
 		drawExplosion();
+	}
+	if (m_setUpAsteroid) {
+		createAsteroid();
+	}
+	if (m_moveAsteroid) {
+		moveAsteroid();
 	}
 }
 
@@ -197,15 +222,7 @@ void Game::setupFontAndText()
 /// load the texture and setup the sprite for the logo
 /// </summary>
 void Game::setupSprite()
-{/*
-	if (!m_logoTexture.loadFromFile("ASSETS\\IMAGES\\SFML-LOGO.png"))
-	{
-		// simple error message if previous call fails
-		std::cout << "problem loading logo" << std::endl;
-	}
-	m_logoSprite.setTexture(m_logoTexture);
-	m_logoSprite.setPosition(300.0f, 180.0f);
-	*/
+{
 }
 
 void Game::setUpScene() {
