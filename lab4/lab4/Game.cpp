@@ -154,17 +154,19 @@ void Game::moveAsteroid() {
 		m_asteroid.append(m_asteroidEndCurrent);
 	}
 	else {
-		m_setUpAsteroid = true;
-		m_moveAsteroid = false;
+		//m_setUpAsteroid = true;
+		//m_moveAsteroid = false;
+		m_gameOver = true;
 	}
 }
 
 void Game::checkCollisions() {
 	float distanceBetween;//float to get the distance between asteroid current end and centre of explosion
-	distanceBetween = vectorLength(m_currentAsteroidEnd - m_explosionPosition);
+	distanceBetween = vectorLength(m_laserEnd - m_currentAsteroidEnd);
 	if (distanceBetween < m_explosionRadius) {
 		m_setUpAsteroid = true;
 		m_moveAsteroid = false;
+		m_score += 5;
 	}
 }
 /// <summary>
@@ -177,18 +179,22 @@ void Game::update(sf::Time t_deltaTime)
 	{
 		m_window.close();
 	}
-	if (m_updateLaser) {
-		moveLaser();
+	if (!m_gameOver) {
+	
+		if (m_updateLaser) {
+			moveLaser();
+		}
+		if (m_exploding) {
+			drawExplosion();
+		}
+		if (m_setUpAsteroid) {
+			createAsteroid();
+		}
+		if (m_moveAsteroid) {
+			moveAsteroid();
+		}
 	}
-	if (m_exploding) {
-		drawExplosion();
-	}
-	if (m_setUpAsteroid) {
-		createAsteroid();
-	}
-	if (m_moveAsteroid) {
-		moveAsteroid();
-	}
+	
 }
 
 /// <summary>
@@ -200,13 +206,13 @@ void Game::render()
 	m_window.draw(m_ground);
 	m_window.draw(m_powerbar);
 	m_window.draw(m_playerBase);
+	m_window.draw(m_asteroid);
 	if (m_updateLaser) {
 		m_window.draw(m_laser);
 	}
 	else if(m_exploding) {
 		m_window.draw(m_explosion);
 	}
-	m_window.draw(m_asteroid);
 	m_window.draw(m_altitudeText);
 	m_window.display();
 }

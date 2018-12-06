@@ -53,10 +53,7 @@ private:
 	sf::Vertex m_asteroidStart;
 	float m_laserLength = 0.0f;
 	float m_currentLaserLength = 0.0f;
-	//enum m_laserState{firing,exploding,notFiring};
-	//m_laserState laserState = notFiring;
-	enum m_asteroidState{waiting,settingUp,moving};
-	m_asteroidState asteroidState = waiting;
+	int m_score = 0;
 	double m_explosionRadius = 5;
 	float m_velocityLaser = 5.0f;
 	float m_velocityAsteroid = 2.5f;
@@ -65,6 +62,7 @@ private:
 	bool m_exploding = false;
 	bool m_setUpAsteroid = true;
 	bool m_moveAsteroid = false;
+	bool m_gameOver = false;
 };
 
 #endif // !GAME
