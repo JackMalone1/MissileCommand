@@ -25,6 +25,7 @@ private:
 	void drawExplosion();
 	void createAsteroid();
 	void moveAsteroid();
+	void checkCollisions();
 
 	sf::RenderWindow m_window; // main SFML window
 	sf::Font m_ArialBlackfont; // font used by message
@@ -50,8 +51,6 @@ private:
 	sf::Vector2f asteroidStartPoint;
 	sf::Vector2f m_asteroidStartPoint;
 	sf::Vertex m_asteroidStart;
-	float m_asteroidLength = 0.0f;
-	float m_asteroidCurrentLength = 0.0f;
 	float m_laserLength = 0.0f;
 	float m_currentLaserLength = 0.0f;
 	//enum m_laserState{firing,exploding,notFiring};
@@ -59,7 +58,8 @@ private:
 	enum m_asteroidState{waiting,settingUp,moving};
 	m_asteroidState asteroidState = waiting;
 	double m_explosionRadius = 5;
-	int m_velocityLaser = 5;
+	float m_velocityLaser = 5.0f;
+	float m_velocityAsteroid = 2.5f;
 	bool m_exitGame; // control exiting game
 	bool m_updateLaser = false;
 	bool m_exploding = false;

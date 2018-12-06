@@ -119,8 +119,9 @@ void Game::drawExplosion() {
 		m_explosion.setFillColor(sf::Color::Red);
 		sf::Vector2f m_explosionPosition{ m_laserEnd };
 		m_explosion.setPosition(m_explosionPosition);
+		checkCollisions();
 	}
-	else if(m_explosionRadius >= 39){
+	else if(m_explosionRadius >= 40){
 		sf::Vector2f m_explosionPosition{ 1000,1000 };
 		m_exploding = false;
 	}
@@ -135,9 +136,7 @@ void Game::createAsteroid() {
 	sf::Vertex asteroidEndCurrent{ m_currentAsteroidEnd,sf::Color::Black };
 	m_asteroid.append(asteroidEndCurrent);
 	m_asteroidEndPoint = sf::Vector2f(static_cast<float>(rand() % 800), static_cast<float>(500));
-	//sf::Vector2f m_asteroidEndPoint(float(rand() % 800),float(500));
 	sf::Vertex m_asteroidEnd(m_asteroidEndPoint, sf::Color::Black);
-	m_asteroidLength = vectorLength(m_asteroidEndPoint - m_asteroidStartPoint);
 	m_setUpAsteroid = false;
 	m_moveAsteroid = true;
 	m_asteroid.append(m_asteroidStart);
@@ -147,9 +146,9 @@ void Game::moveAsteroid() {
 	sf::Vertex m_asteroidStart(m_asteroidStartPoint, sf::Color::Black);
 	m_asteroid.append(m_asteroidStart);
 	sf::Vector2f m_unitVectorAsteroid = vectorUnitVector(m_asteroidEndPoint - m_currentAsteroidEnd);
-	m_asteroidCurrentLength = vectorLength(m_currentAsteroidEnd - m_asteroidStartPoint);
-	if (m_currentAsteroidEnd.y < 500) {
-		m_unitVectorAsteroid = { m_unitVectorAsteroid.x * m_velocityLaser,m_unitVectorAsteroid.y * m_velocityLaser };
+
+	if (m_currentAsteroidEnd.y < 500 ) {
+		m_unitVectorAsteroid = { m_unitVectorAsteroid.x * m_velocityAsteroid,m_unitVectorAsteroid.y * m_velocityAsteroid };
 		m_currentAsteroidEnd = m_currentAsteroidEnd + (m_unitVectorAsteroid);
 		sf::Vertex m_asteroidEndCurrent{ m_currentAsteroidEnd,sf::Color::Black };
 		m_asteroid.append(m_asteroidEndCurrent);
@@ -157,8 +156,15 @@ void Game::moveAsteroid() {
 	else {
 		m_setUpAsteroid = true;
 		m_moveAsteroid = false;
-		m_asteroidCurrentLength = 0.0f;
-		m_asteroidLength = 0.0f;
+	}
+}
+
+void Game::checkCollisions() {
+	float distanceBetween;//float to get the distance between asteroid current end and centre of explosion
+	distanceBetween = vectorLength(m_currentAsteroidEnd - m_explosionPosition);
+	if (distanceBetween < m_explosionRadius) {
+		m_setUpAsteroid = true;
+		m_moveAsteroid = false;
 	}
 }
 /// <summary>
