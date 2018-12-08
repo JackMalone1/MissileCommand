@@ -128,13 +128,22 @@ void Game::drawExplosion() {
 		m_explosionRadius += 0.5;
 		m_explosion.setRadius(float(m_explosionRadius));
 		m_explosion.setOrigin(m_explosion.getRadius() / 2, m_explosion.getRadius() / 2);
-		m_explosion.setFillColor(sf::Color::Red);
+		if (m_gameState == classic) {
+			m_explosion.setFillColor(sf::Color::Red);
+		}
+		else if (m_gameState == extraFeatures) {
+			m_explosion.setFillColor(sf::Color::Transparent);
+			m_explosion.setOutlineColor(sf::Color::Red);
+			m_explosion.setOutlineThickness(0.5);
+		}
 		sf::Vector2f m_explosionPosition{ m_laserEnd };
 		m_explosion.setPosition(m_explosionPosition);
+		m_explosionSprite.setPosition(m_explosionPosition);
 		checkCollisions();
 	}
 	else if(m_explosionRadius >= 40){
 		sf::Vector2f m_explosionPosition{ 1000,1000 };
+		m_explosionSprite.setScale(1.0f, 1.0f);
 		m_exploding = false;
 	}
 }
@@ -282,6 +291,7 @@ void Game::render()
 			}
 			else if(m_gameState == extraFeatures){
 				m_window.draw(m_explosion);
+				m_window.draw(m_explosionSprite);
 			}
 		}
 		m_window.draw(m_altitudeText);
@@ -360,6 +370,13 @@ void Game::setupSprite()
 	}
 	m_groundSprite.setTexture(m_groundTexture);
 	m_groundSprite.setPosition(0, 500);
+
+	m_explosionTexture.loadFromFile("ASSETS\\IMAGES\\explosion.png");
+	if (!m_explosionTexture.loadFromFile("ASSETS\\IMAGES\\explosion.png")) {
+		//error....
+	}
+	m_explosionSprite.setTexture(m_explosionTexture);
+	m_explosionSprite.setPosition(m_explosionPosition);
 }
 
 void Game::setUpScene() {

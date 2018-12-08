@@ -71,6 +71,7 @@ private:
 	sf::Vector2f asteroidStartPoint;
 	sf::Vector2f m_asteroidStartPoint;
 	sf::Vertex m_asteroidStart;
+
 	float m_powerbarWidth = 0;
 	sf::Vector2f powerbarSize{ m_powerbarWidth, 50.0f };
 
