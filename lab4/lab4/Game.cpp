@@ -90,6 +90,9 @@ void Game::processMouseEvents(sf::Event t_event) {
 			m_updateLaser = true;
 			m_explosionRadius = 10;
 			m_laserLength = vectorLength(m_mouseClick - m_laserStart);
+			m_maxAltitude = float(500 - (m_powerbarWidth * 1.5));
+			m_powerbarWidth = 0;
+			m_powerbar.setSize(powerbarSize);
 		}
 	}
 }
@@ -98,7 +101,7 @@ void Game::moveLaser() {
 	m_laser.append(m_laserStartPoint);
 	sf::Vector2f m_unitVector = vectorUnitVector(m_mouseClick - m_laserEnd);
 	m_currentLaserLength = vectorLength(m_laserEnd - m_laserStart);
-	if (m_currentLaserLength < m_laserLength) {
+	if (m_currentLaserLength < m_laserLength && m_laserEnd.y > m_maxAltitude) {
 		m_unitVector = { m_unitVector.x * m_velocityLaser,m_unitVector.y * m_velocityLaser };
 		m_laserEnd = m_laserEnd + (m_unitVector);
 		sf::Vertex m_laserEndPoint{ m_laserEnd,sf::Color::Black };
@@ -140,6 +143,10 @@ void Game::createAsteroid() {
 	m_setUpAsteroid = false;
 	m_moveAsteroid = true;
 	m_asteroid.append(m_asteroidStart);
+	if (m_asteroidsDestroyed > 0) {
+		m_score += 5;
+		m_scoreText.setString("Score: " + std::to_string(m_score));
+	}
 }
 void Game::moveAsteroid() {
 	m_asteroid.clear(); 
@@ -154,8 +161,6 @@ void Game::moveAsteroid() {
 		m_asteroid.append(m_asteroidEndCurrent);
 	}
 	else {
-		//m_setUpAsteroid = true;
-		//m_moveAsteroid = false;
 		m_gameOver = true;
 	}
 }
@@ -164,9 +169,31 @@ void Game::checkCollisions() {
 	float distanceBetween;//float to get the distance between asteroid current end and centre of explosion
 	distanceBetween = vectorLength(m_laserEnd - m_currentAsteroidEnd);
 	if (distanceBetween < m_explosionRadius) {
-		m_setUpAsteroid = true;
 		m_moveAsteroid = false;
-		m_score += 5;
+		m_waitToMakeAsteroid = 0;
+	}
+}
+
+void Game::animatePowerBar() {
+	if (powerbar == increasing) {
+		m_powerbarWidth += 5;
+		if (m_powerbarWidth >= 250) {
+			powerbar = decreasing;
+		}
+		else {
+			powerbarSize = sf::Vector2f{ m_powerbarWidth, 50.0f };
+			m_powerbar.setSize(powerbarSize);
+		}
+	}
+	else if (powerbar == decreasing) {
+		m_powerbarWidth -= 5;
+		if (m_powerbarWidth <= 0) {
+			powerbar = increasing;
+		}
+		else {
+			powerbarSize = sf::Vector2f{ m_powerbarWidth, 50.0f };
+			m_powerbar.setSize(powerbarSize);
+		}
 	}
 }
 /// <summary>
@@ -181,20 +208,36 @@ void Game::update(sf::Time t_deltaTime)
 	}
 	if (!m_gameOver) {
 	
-		if (m_updateLaser) {
+		if (m_updateLaser) {//moves the laser after the player clicks somewhere on the screen
 			moveLaser();
 		}
-		if (m_exploding) {
+		if (m_exploding) {//explodes the laser once it reaches its end point
 			drawExplosion();
 		}
-		if (m_setUpAsteroid) {
+		if (m_setUpAsteroid) {//if it is not waiting to make asteroid it will set it up with random values before moving it
 			createAsteroid();
 		}
-		if (m_moveAsteroid) {
+		else if(!m_setUpAsteroid && !m_moveAsteroid) {//only waits if asteroid is not firing and it is not being set up
+			//only reset to zero if the player destroys the asteroid so will only make a new time to wait then
+			if (m_waitToMakeAsteroid == 0) {//only sets a new value for time to wait once the asteroid has been destroyed
+				m_timeToWait = (rand() % 120) + 30; // player has a random time between half a second and 2.5 seconds before another asteroid
+			}
+			//makes sure that the asteroid doesn't stay on the screen after a collision
+			m_asteroid.clear();
+			m_waitToMakeAsteroid++;//increments the time so that it will set up the asteroid after the wait time
+			if (m_waitToMakeAsteroid >= m_timeToWait) {//once it reaches its wait time it will set up the asteroid
+				m_asteroidsDestroyed++;
+				m_amountOfAsteroidsDestroyed.setString("Amount of asteroids destroyed: " + std::to_string(m_asteroidsDestroyed));
+				m_setUpAsteroid = true;
+			}
+		}
+		if (m_moveAsteroid) {//moves asteroid after it has been set up with default values
 			moveAsteroid();
 		}
+		if (!m_updateLaser) {
+			animatePowerBar();
+		}
 	}
-	
 }
 
 /// <summary>
@@ -207,13 +250,21 @@ void Game::render()
 	m_window.draw(m_powerbar);
 	m_window.draw(m_playerBase);
 	m_window.draw(m_asteroid);
-	if (m_updateLaser) {
-		m_window.draw(m_laser);
+
+	if (!m_gameOver) {
+		if (m_updateLaser) {
+			m_window.draw(m_laser);
+		}
+		else if (m_exploding) {
+			m_window.draw(m_explosion);
+		}
+		m_window.draw(m_altitudeText);
 	}
-	else if(m_exploding) {
-		m_window.draw(m_explosion);
+	else {
+		m_window.draw(m_gameOverText);
+		m_window.draw(m_scoreText);
+		m_window.draw(m_amountOfAsteroidsDestroyed);
 	}
-	m_window.draw(m_altitudeText);
 	m_window.display();
 }
 
@@ -227,9 +278,28 @@ void Game::setupFontAndText()
 		std::cout << "problem loading arial black font" << std::endl;
 	}
 	m_altitudeText.setFont(m_ArialBlackfont);
+	m_altitudeText.setCharacterSize(24);
 	m_altitudeText.setString("Altitude");
-	m_altitudeText.setPosition(300.0f, 525.0f);
+	m_altitudeText.setPosition(50.0f, 525.0f);
 	m_altitudeText.setFillColor(sf::Color::White);
+
+	m_scoreText.setFont(m_ArialBlackfont);
+	m_scoreText.setCharacterSize(24);
+	m_scoreText.setString("Score: " + std::to_string(m_score));
+	m_scoreText.setPosition(50.0f, 525.0f);
+	m_scoreText.setFillColor(sf::Color::White);
+
+	m_gameOverText.setFont(m_ArialBlackfont);
+	m_gameOverText.setCharacterSize(48);
+	m_gameOverText.setString("Game Over");
+	m_gameOverText.setPosition((float)m_window.getSize().x / 2, (float)m_window.getSize().y / 2);
+	m_gameOverText.setFillColor(sf::Color::Yellow);
+
+	m_amountOfAsteroidsDestroyed.setFont(m_ArialBlackfont);
+	m_amountOfAsteroidsDestroyed.setCharacterSize(24);
+	m_amountOfAsteroidsDestroyed.setString("Amount of asteroids destroyed: " + std::to_string(m_asteroidsDestroyed));
+	m_amountOfAsteroidsDestroyed.setPosition(300.0f,525.0f);
+	m_amountOfAsteroidsDestroyed.setFillColor(sf::Color::White);
 }
 
 /// <summary>
@@ -241,14 +311,13 @@ void Game::setupSprite()
 
 void Game::setUpScene() {
 	sf::Vector2f groundSize(800, 100);
-	sf::Vector2f powerbarSize(200,50);
 	sf::Vector2f playerBaseSize(80,80);
 	m_ground.setSize(groundSize);
 	m_ground.setFillColor(sf::Color::Green);
 	m_ground.setPosition(0, 500);
 	m_powerbar.setSize(powerbarSize);
 	m_powerbar.setFillColor(sf::Color::Red);
-	m_powerbar.setPosition(50, 525);
+	m_powerbar.setPosition(200, 525);
 	m_playerBase.setSize(playerBaseSize);
 	m_playerBase.setFillColor(sf::Color::Red);
 	m_playerBase.setPosition((float)(m_window.getSize().x / 2.0 - 40), 420);
