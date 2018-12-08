@@ -12,7 +12,7 @@
 /// pass parameters fpr sfml window, setup m_exitGame
 /// </summary>
 Game::Game() :
-	m_window{ sf::VideoMode{ 800, 600, 32 }, "SFML Game" },
+	m_window{ sf::VideoMode{ 800, 600, 32 }, "Missile Command" },
 	m_exitGame{ false } //when true game will exit
 {
 	setupFontAndText(); // load font 
@@ -194,7 +194,7 @@ void Game::checkCollisions() {
 
 void Game::animatePowerBar() {
 	if (m_powerbarState == increasing) {
-		m_powerbarWidth += 5;
+		m_powerbarWidth += 2.5;
 		if (m_powerbarWidth >= 250) {
 			m_powerbarState = decreasing;
 		}
@@ -204,7 +204,7 @@ void Game::animatePowerBar() {
 		}
 	}
 	else if (m_powerbarState == decreasing) {
-		m_powerbarWidth -= 5;
+		m_powerbarWidth -= 2.5;
 		if (m_powerbarWidth <= 0) {
 			m_powerbarState = increasing;
 		}
@@ -268,13 +268,13 @@ void Game::update(sf::Time t_deltaTime)
 void Game::render()
 {
 	m_window.clear(sf::Color::White);
-	if (m_gameState == classic) {
+	if (m_gameState == classic) {//draws the basic version of each of the objects before they press t
 		m_window.draw(m_ground);
 		m_window.draw(m_powerbar);
 		m_window.draw(m_playerBase);
 		m_window.draw(m_asteroid);
 	}
-	if (m_gameState == extraFeatures) {
+	if (m_gameState == extraFeatures) {// after they press t the textures will be displayed
 		m_window.draw(m_onScreenArea);
 		m_window.draw(m_groundSprite);
 		m_window.draw(m_powerbar);

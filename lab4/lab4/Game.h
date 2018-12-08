@@ -94,7 +94,7 @@ private:
 	
 	double m_explosionRadius = 5;
 	float m_velocityLaser = 5.0f;
-	float m_velocityAsteroid = 2.5f;
+	float m_velocityAsteroid = 2.0f;
 
 	bool m_exitGame; // control exiting game
 	bool m_updateLaser = false;
