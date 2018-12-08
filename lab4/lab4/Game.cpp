@@ -19,6 +19,7 @@ Game::Game() :
 	setupSprite(); // load texture
 	setUpScene();
 	createAsteroid();
+	setupSprite();
 }
 
 /// <summary>
@@ -71,6 +72,14 @@ void Game::processEvents()
 			{
 				m_exitGame = true;
 			}
+			if (sf::Keyboard::T == event.key.code) {
+				if (m_gameState == classic) {
+					m_gameState = extraFeatures;
+				}
+				else {
+					m_gameState = classic;
+				}
+			}
 		}
 		if (sf::Event::MouseButtonPressed == event.type) {
 			m_laser.clear();
@@ -104,7 +113,7 @@ void Game::moveLaser() {
 	if (m_currentLaserLength < m_laserLength && m_laserEnd.y > m_maxAltitude) {
 		m_unitVector = { m_unitVector.x * m_velocityLaser,m_unitVector.y * m_velocityLaser };
 		m_laserEnd = m_laserEnd + (m_unitVector);
-		sf::Vertex m_laserEndPoint{ m_laserEnd,sf::Color::Black };
+		sf::Vertex m_laserEndPoint{ m_laserEnd,sf::Color::Yellow };
 		m_laser.append(m_laserEndPoint);
 	}
 	else {
@@ -133,13 +142,13 @@ void Game::drawExplosion() {
 void Game::createAsteroid() {
 	m_asteroid.clear();
 	sf::Vector2f asteroidStartPoint(static_cast<float>(rand() % 800), static_cast<float>(0));
-	sf::Vertex asteroidStart(m_asteroidStartPoint, sf::Color::Black);	
+	sf::Vertex asteroidStart(m_asteroidStartPoint, sf::Color::Red);	
 	m_currentAsteroidEnd = asteroidStartPoint;
 	m_asteroidStartPoint = asteroidStartPoint;
-	sf::Vertex asteroidEndCurrent{ m_currentAsteroidEnd,sf::Color::Black };
+	sf::Vertex asteroidEndCurrent{ m_currentAsteroidEnd,sf::Color::Red };
 	m_asteroid.append(asteroidEndCurrent);
 	m_asteroidEndPoint = sf::Vector2f(static_cast<float>(rand() % 800), static_cast<float>(500));
-	sf::Vertex m_asteroidEnd(m_asteroidEndPoint, sf::Color::Black);
+	sf::Vertex m_asteroidEnd(m_asteroidEndPoint, sf::Color::Red);
 	m_setUpAsteroid = false;
 	m_moveAsteroid = true;
 	m_asteroid.append(m_asteroidStart);
@@ -150,14 +159,14 @@ void Game::createAsteroid() {
 }
 void Game::moveAsteroid() {
 	m_asteroid.clear(); 
-	sf::Vertex m_asteroidStart(m_asteroidStartPoint, sf::Color::Black);
+	sf::Vertex m_asteroidStart(m_asteroidStartPoint, sf::Color::Red);
 	m_asteroid.append(m_asteroidStart);
 	sf::Vector2f m_unitVectorAsteroid = vectorUnitVector(m_asteroidEndPoint - m_currentAsteroidEnd);
 
 	if (m_currentAsteroidEnd.y < 500 ) {
 		m_unitVectorAsteroid = { m_unitVectorAsteroid.x * m_velocityAsteroid,m_unitVectorAsteroid.y * m_velocityAsteroid };
 		m_currentAsteroidEnd = m_currentAsteroidEnd + (m_unitVectorAsteroid);
-		sf::Vertex m_asteroidEndCurrent{ m_currentAsteroidEnd,sf::Color::Black };
+		sf::Vertex m_asteroidEndCurrent{ m_currentAsteroidEnd,sf::Color::Red };
 		m_asteroid.append(m_asteroidEndCurrent);
 	}
 	else {
@@ -175,25 +184,40 @@ void Game::checkCollisions() {
 }
 
 void Game::animatePowerBar() {
-	if (powerbar == increasing) {
+	if (m_powerbarState == increasing) {
 		m_powerbarWidth += 5;
 		if (m_powerbarWidth >= 250) {
-			powerbar = decreasing;
+			m_powerbarState = decreasing;
 		}
 		else {
 			powerbarSize = sf::Vector2f{ m_powerbarWidth, 50.0f };
 			m_powerbar.setSize(powerbarSize);
 		}
 	}
-	else if (powerbar == decreasing) {
+	else if (m_powerbarState == decreasing) {
 		m_powerbarWidth -= 5;
 		if (m_powerbarWidth <= 0) {
-			powerbar = increasing;
+			m_powerbarState = increasing;
 		}
 		else {
 			powerbarSize = sf::Vector2f{ m_powerbarWidth, 50.0f };
 			m_powerbar.setSize(powerbarSize);
 		}
+	}
+}
+
+void Game::waitToMakeAsteroid() {
+	//only reset to zero if the player destroys the asteroid so will only make a new time to wait then
+	if (m_waitToMakeAsteroid == 0) {//only sets a new value for time to wait once the asteroid has been destroyed
+		m_timeToWait = (rand() % 120) + 30; // player has a random time between half a second and 2.5 seconds before another asteroid
+	}
+	//makes sure that the asteroid doesn't stay on the screen after a collision
+	m_asteroid.clear();
+	m_waitToMakeAsteroid++;//increments the time so that it will set up the asteroid after the wait time
+	if (m_waitToMakeAsteroid >= m_timeToWait) {//once it reaches its wait time it will set up the asteroid
+		m_asteroidsDestroyed++;//increases the tally for how many they've destroyed as it only creates a new assteroid if they destroyed one 
+		m_amountOfAsteroidsDestroyed.setString("Amount of asteroids destroyed: " + std::to_string(m_asteroidsDestroyed));//updates the string
+		m_setUpAsteroid = true;//sets up the asteroid so it can move again after it was destroyed
 	}
 }
 /// <summary>
@@ -218,23 +242,12 @@ void Game::update(sf::Time t_deltaTime)
 			createAsteroid();
 		}
 		else if(!m_setUpAsteroid && !m_moveAsteroid) {//only waits if asteroid is not firing and it is not being set up
-			//only reset to zero if the player destroys the asteroid so will only make a new time to wait then
-			if (m_waitToMakeAsteroid == 0) {//only sets a new value for time to wait once the asteroid has been destroyed
-				m_timeToWait = (rand() % 120) + 30; // player has a random time between half a second and 2.5 seconds before another asteroid
-			}
-			//makes sure that the asteroid doesn't stay on the screen after a collision
-			m_asteroid.clear();
-			m_waitToMakeAsteroid++;//increments the time so that it will set up the asteroid after the wait time
-			if (m_waitToMakeAsteroid >= m_timeToWait) {//once it reaches its wait time it will set up the asteroid
-				m_asteroidsDestroyed++;
-				m_amountOfAsteroidsDestroyed.setString("Amount of asteroids destroyed: " + std::to_string(m_asteroidsDestroyed));
-				m_setUpAsteroid = true;
-			}
+			waitToMakeAsteroid();
 		}
 		if (m_moveAsteroid) {//moves asteroid after it has been set up with default values
 			moveAsteroid();
 		}
-		if (!m_updateLaser) {
+		if (!m_updateLaser) {//updates the power bar only if the laser is not updating
 			animatePowerBar();
 		}
 	}
@@ -246,17 +259,30 @@ void Game::update(sf::Time t_deltaTime)
 void Game::render()
 {
 	m_window.clear(sf::Color::White);
-	m_window.draw(m_ground);
-	m_window.draw(m_powerbar);
-	m_window.draw(m_playerBase);
-	m_window.draw(m_asteroid);
-
+	if (m_gameState == classic) {
+		m_window.draw(m_ground);
+		m_window.draw(m_powerbar);
+		m_window.draw(m_playerBase);
+		m_window.draw(m_asteroid);
+	}
+	if (m_gameState == extraFeatures) {
+		m_window.draw(m_onScreenArea);
+		m_window.draw(m_groundSprite);
+		m_window.draw(m_powerbar);
+		m_window.draw(m_asteroid);
+		m_window.draw(m_playerBaseSprite);
+	}
 	if (!m_gameOver) {
 		if (m_updateLaser) {
 			m_window.draw(m_laser);
 		}
 		else if (m_exploding) {
-			m_window.draw(m_explosion);
+			if (m_gameState == classic) {
+				m_window.draw(m_explosion);
+			}
+			else if(m_gameState == extraFeatures){
+				m_window.draw(m_explosion);
+			}
 		}
 		m_window.draw(m_altitudeText);
 	}
@@ -298,7 +324,7 @@ void Game::setupFontAndText()
 	m_amountOfAsteroidsDestroyed.setFont(m_ArialBlackfont);
 	m_amountOfAsteroidsDestroyed.setCharacterSize(24);
 	m_amountOfAsteroidsDestroyed.setString("Amount of asteroids destroyed: " + std::to_string(m_asteroidsDestroyed));
-	m_amountOfAsteroidsDestroyed.setPosition(300.0f,525.0f);
+	m_amountOfAsteroidsDestroyed.setPosition(350.0f,525.0f);
 	m_amountOfAsteroidsDestroyed.setFillColor(sf::Color::White);
 }
 
@@ -307,6 +333,33 @@ void Game::setupFontAndText()
 /// </summary>
 void Game::setupSprite()
 {
+	m_backgroundTexture.loadFromFile("ASSETS\\IMAGES\\background.png");
+	if (!m_backgroundTexture.loadFromFile("ASSETS\\IMAGES\\background.png"))
+	{
+		// error...
+	}
+	m_onScreenArea.setTexture(m_backgroundTexture);
+
+	m_playerBaseTexture.loadFromFile("ASSETS\\IMAGES\\playerTurret.png");
+	if (!m_playerBaseTexture.loadFromFile("ASSETS\\IMAGES\\playerTurret.png")) {
+		//error....
+	}
+	m_playerBaseSprite.setTexture(m_playerBaseTexture);
+	m_playerBaseSprite.setPosition((float)(m_window.getSize().x / 2.0 - 40), 420);
+
+	m_groundTexture.loadFromFile("ASSETS\\IMAGES\\ground.png");
+	if (!m_groundTexture.loadFromFile("ASSETS\\IMAGES\\ground.png")) {
+		//error....
+	}
+	m_groundSprite.setTexture(m_groundTexture);
+	m_groundSprite.setPosition(0, 500);
+
+	m_groundTexture.loadFromFile("ASSETS\\IMAGES\\ground.png");
+	if (!m_groundTexture.loadFromFile("ASSETS\\IMAGES\\ground.png")) {
+		//error....
+	}
+	m_groundSprite.setTexture(m_groundTexture);
+	m_groundSprite.setPosition(0, 500);
 }
 
 void Game::setUpScene() {
