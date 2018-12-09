@@ -2,6 +2,15 @@
 //got help from Ben Miller on how to do collision between asteroid and the explosoion
 //got help from Josh
 //got help from Aaron
+//slight delay between the collision and the sound happening. If sound happens before the audio quality is poor.
+//when t is pressed the game changes to the sprites instead of the normal shapes from the basic version of the game
+//whenever the user shoots a laser a firing sound is played and if the explosion intersects with the asteroid an explosion sound is played
+//the aim of the game is to try and stop the asteroid from reaching the earth
+//the player can stop the asteroid by shooting at the asteroid with the laser
+//they will destroy the laser if the end point of the asteroid hits the explosion
+//if the asteroid hits the ground a game over text displays and the user is no longer able to shoot the laser
+//also the asteroid no longer moves down the screen
+//the game displays the player's score and how many asteroids they destroyed at the end of the game
 #include "Game.h"
 #include "MyVector2.h"
 #include <iostream>
@@ -12,14 +21,15 @@
 /// pass parameters fpr sfml window, setup m_exitGame
 /// </summary>
 Game::Game() :
-	m_window{ sf::VideoMode{ 800, 600, 32 }, "Missile Command" },
+	m_window{ sf::VideoMode{ 800, 600, 32 }, "Missile Command Jack Malone" },
 	m_exitGame{ false } //when true game will exit
 {
 	setupFontAndText(); // load font 
 	setupSprite(); // load texture
-	setUpScene();
-	createAsteroid();
-	setupSprite();
+	setUpScene();//sets up the basic shapes for the screen
+	createAsteroid();//sets up start point and ultimate end point for the asteroid after the wait period for making a new asteroid
+	setupSprite();//sets up all the sprites with their textures and position on the screen for if the player presses t for the extra features
+	setUpSounds();//loads sounds in and sets up the sound buffers
 }
 
 /// <summary>
@@ -102,6 +112,7 @@ void Game::processMouseEvents(sf::Event t_event) {
 			m_maxAltitude = float(500 - (m_powerbarWidth * 1.5));
 			m_powerbarWidth = 0;
 			m_powerbar.setSize(powerbarSize);
+			m_fireSound.play();
 		}
 	}
 }
@@ -113,7 +124,7 @@ void Game::moveLaser() {
 	if (m_currentLaserLength < m_laserLength && m_laserEnd.y > m_maxAltitude) {
 		m_unitVector = { m_unitVector.x * m_velocityLaser,m_unitVector.y * m_velocityLaser };
 		m_laserEnd = m_laserEnd + (m_unitVector);
-		sf::Vertex m_laserEndPoint{ m_laserEnd,sf::Color::Yellow };
+		sf::Vertex m_laserEndPoint{ m_laserEnd,sf::Color::Blue };
 		m_laser.append(m_laserEndPoint);
 	}
 	else {
@@ -189,6 +200,7 @@ void Game::checkCollisions() {
 	if (distanceBetween < m_explosionRadius) {
 		m_moveAsteroid = false;
 		m_waitToMakeAsteroid = 0;
+		
 	}
 }
 
@@ -227,6 +239,7 @@ void Game::waitToMakeAsteroid() {
 		m_asteroidsDestroyed++;//increases the tally for how many they've destroyed as it only creates a new assteroid if they destroyed one 
 		m_amountOfAsteroidsDestroyed.setString("Amount of asteroids destroyed: " + std::to_string(m_asteroidsDestroyed));//updates the string
 		m_setUpAsteroid = true;//sets up the asteroid so it can move again after it was destroyed
+		m_collisionSound.play();
 	}
 }
 /// <summary>
@@ -394,4 +407,12 @@ void Game::setUpScene() {
 	m_explosion.setOrigin(m_explosion.getRadius() / 2, m_explosion.getRadius() / 2);
 	sf::Vector2f m_explosionPosition{ -1000,1000 };
 	m_explosion.setPosition(m_explosionPosition);
+}
+
+void Game::setUpSounds() {
+	m_fireBuffer.loadFromFile("ASSETS\\SOUNDS\\fire.wav");
+	m_fireSound.setBuffer(m_fireBuffer);
+
+	m_collisionBuffer.loadFromFile("ASSETS\\SOUNDS\\explosion.wav");
+	m_collisionSound.setBuffer(m_collisionBuffer);
 }

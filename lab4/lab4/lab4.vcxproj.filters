@@ -22,6 +22,9 @@
     <Filter Include="ASSETS\IMAGES">
       <UniqueIdentifier>{beded0db-d060-4d5e-bf76-aba22abe2980}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ASSETS\SOUNDS">
+      <UniqueIdentifier>{66a4be13-d687-4d59-af91-0b02d42978a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -51,5 +54,13 @@
     <Image Include="ASSETS\IMAGES\SFML-LOGO.png">
       <Filter>ASSETS\IMAGES</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="ASSETS\SOUNDS\explosion.wav">
+      <Filter>ASSETS\SOUNDS</Filter>
+    </Media>
+    <Media Include="ASSETS\SOUNDS\fire.wav">
+      <Filter>ASSETS\SOUNDS</Filter>
+    </Media>
   </ItemGroup>
 </Project>

@@ -141,6 +141,10 @@
   <ItemGroup>
     <Image Include="ASSETS\IMAGES\SFML-LOGO.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="ASSETS\SOUNDS\explosion.wav" />
+    <Media Include="ASSETS\SOUNDS\fire.wav" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -3,6 +3,7 @@
 #define GAME
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 const float m_PI = 3.14159265359f;
 class Game
 {
@@ -19,6 +20,7 @@ private:
 	void render();
 
 	void setupFontAndText();
+	void setUpSounds();
 	void setupSprite();
 	void setUpScene();
 	void moveLaser();
@@ -40,6 +42,12 @@ private:
 	sf::RectangleShape m_ground;
 	sf::RectangleShape m_powerbar;
 	sf::RectangleShape m_playerBase;
+
+	sf::SoundBuffer m_fireBuffer;
+	sf::SoundBuffer m_collisionBuffer;
+
+	sf::Sound m_fireSound;
+	sf::Sound m_collisionSound;
 
 	sf::CircleShape m_explosion;
 	sf::Vector2f m_explosionPosition{ -1000,1000 };
